@@ -1,0 +1,6 @@
+c:\users\alex\documents\visual studio 2013\Projects\MyBigIntApplication\MyBigIntApplication\bin\Debug\MyBigIntApplication.exe.config
+c:\users\alex\documents\visual studio 2013\Projects\MyBigIntApplication\MyBigIntApplication\bin\Debug\MyBigIntApplication.exe
+c:\users\alex\documents\visual studio 2013\Projects\MyBigIntApplication\MyBigIntApplication\bin\Debug\MyBigIntApplication.pdb
+c:\users\alex\documents\visual studio 2013\Projects\MyBigIntApplication\MyBigIntApplication\obj\Debug\MyBigIntApplication.exe
+c:\users\alex\documents\visual studio 2013\Projects\MyBigIntApplication\MyBigIntApplication\obj\Debug\MyBigIntApplication.pdb
+c:\users\alex\documents\visual studio 2013\Projects\MyBigIntApplication\MyBigIntApplication\obj\Debug\MyBigIntApplication.csprojResolveAssemblyReference.cache
