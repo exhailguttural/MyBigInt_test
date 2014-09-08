@@ -55,17 +55,21 @@ namespace MyBigIntApplication
             List<int> resultFactorsList = new List<int>();
             int rest = 0;
             int factorsSum = 0;
+            bool signsChanged = false;
+            int aSign = a.Sign;
+            int bSign = b.Sign;
             if (MyBigInt.checkIfNegativeIsBigger(a, b))
             {
-                a.Sign = -a.Sign;
-                b.Sign = -b.Sign;
+                aSign = -aSign;
+                bSign = -bSign;
+                signsChanged = true;
             }
             for (int i = 0; (i < Math.Max(a.Factors.Length, b.Factors.Length)) || (i > 0 && rest != 0); i++)
             {
-                factorsSum += a.Factors.Length - 1 >= i ? a.Factors[i] * a.Sign : 0;
-                factorsSum += b.Factors.Length - 1 >= i ? b.Factors[i] * b.Sign : 0;
+                factorsSum += a.Factors.Length - 1 >= i ? a.Factors[i] * aSign : 0;
+                factorsSum += b.Factors.Length - 1 >= i ? b.Factors[i] * bSign : 0;
                 factorsSum += rest;
-                if (factorsSum < 0 && i < Math.Max(a.Factors.Length, b.Factors.Length) - 1 && a.Sign != b.Sign)
+                if (factorsSum < 0 && i < Math.Max(a.Factors.Length, b.Factors.Length) - 1 && aSign != bSign)
                 {
                     factorsSum += radix;
                     rest = -1;
@@ -79,9 +83,9 @@ namespace MyBigIntApplication
                 resultFactorsList.Add(Math.Abs(factorsSum));
                 factorsSum = 0;
             }
-            int resultSign = a.Sign == b.Sign && b.Sign < 0 ? -1 : 1;
+            int resultSign = aSign == bSign && bSign < 0 ? -1 : 1;
             MyBigInt result = new MyBigInt(resultFactorsList.ToArray(), resultSign);
-            if (MyBigInt.checkIfNegativeIsBigger(a, b))
+            if (signsChanged)
             {
                 result.Sign = -result.Sign;
             }
@@ -90,8 +94,7 @@ namespace MyBigIntApplication
 
         public static MyBigInt operator -(MyBigInt a, MyBigInt b)
         {
-            b.Sign = -b.Sign;
-            return a + b;
+            return a + new MyBigInt(b.Factors, -b.Sign);
         }
 
         public override String ToString()
