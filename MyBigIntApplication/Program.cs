@@ -10,10 +10,10 @@ namespace MyBigIntApplication
     {
         static void Main(string[] args)
         {
-            MyBigInt first = new MyBigInt("5");
+            MyBigInt first = new MyBigInt("-5");
             MyBigInt second = new MyBigInt("-10");
             Console.WriteLine(first + second);
-            //Console.WriteLine(first - second);
+            Console.WriteLine(first - second);
             Console.ReadLine();
         }
     }
