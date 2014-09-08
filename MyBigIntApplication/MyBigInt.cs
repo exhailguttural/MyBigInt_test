@@ -97,6 +97,29 @@ namespace MyBigIntApplication
             return a + new MyBigInt(b.Factors, -b.Sign);
         }
 
+        public static MyBigInt operator *(MyBigInt a, MyBigInt b)
+        {
+            List<int> resultFactorsList = new List<int>();
+            int factorProduct;
+            int rest = 0;
+            for (int i = 0; i < b.Factors.Length; i++)
+            {
+                for (int j = 0; j < a.Factors.Length || rest != 0; j++)
+                {
+                    if (j >= a.Factors.Length) factorProduct = rest;
+                    else factorProduct = a.Factors[j] * b.Factors[i] + rest;
+                    if (factorProduct > radix)
+                    {
+                        rest = factorProduct / radix;
+                        factorProduct = factorProduct % radix;
+                    }
+                    else rest = 0;
+                    resultFactorsList.Add(factorProduct);
+                }
+            }
+            return new MyBigInt(resultFactorsList.ToArray(), a.Sign * b.Sign);
+        }
+
         public override String ToString()
         {
             StringBuilder stringBuild = new StringBuilder();
@@ -132,12 +155,12 @@ namespace MyBigIntApplication
             {
                 for (int i = a.Factors.Length - 1; i >= 0; i--)
                 {
-                    if (Math.Abs(a.Factors[i]) > Math.Abs(b.Factors[i]))
+                    if (a.Factors[i] > b.Factors[i])
                     {
                         theBiggest = a;
                         break;
                     }
-                    else if (Math.Abs(a.Factors[i]) < Math.Abs(b.Factors[i]))
+                    else if (a.Factors[i] < b.Factors[i])
                     {
                         theBiggest = b;
                         break;
