@@ -11,16 +11,16 @@ namespace MyBigIntApplication
     class MyBigInt
     {
         public int[] Factors {get; set;}
-        public bool IsPositive {get; set;}
+        public int Sign {get; set;}
         private static int radix = 10000;
 
         public MyBigInt(String value)
         {
-            IsPositive = true;
+            Sign = 1;
             int border = 0;
             if (value.StartsWith("-") || value.StartsWith("+"))
             {
-                if (value.StartsWith("-")) IsPositive = false;
+                if (value.StartsWith("-")) Sign = -1;
                 Factors = new int[(int)Math.Ceiling((double)(value.Length - 1) / 4)];
                 border = 1;
             }
@@ -30,53 +30,55 @@ namespace MyBigIntApplication
             }
             int i = value.Length - 1;
             int j = 0;
-            try
+            if (checkInputString(value))
             {
-                for ( ; i >= border; i -= 4)
+                try
                 {
-                    int parseTokenLength = Math.Min(i + 1, 4);
-                    Factors[j] = IsPositive ? Math.Abs(int.Parse(value.Substring(i - parseTokenLength + 1, parseTokenLength)))
-                                            : -1 * Math.Abs(int.Parse(value.Substring(i - parseTokenLength + 1, parseTokenLength)));
-                    j++;
+                    for ( ; i >= border; i -= 4)
+                    {
+                        int parseTokenLength = Math.Min(i + 1, 4);
+                        Factors[j] = int.Parse(value.Substring(i - parseTokenLength + 1, parseTokenLength));
+                        j++;
+                    }
                 }
-            }
-            catch (ArgumentException e)
-            {
-                Console.WriteLine("exc");
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine("exc");
+                }
             }
         }
 
         private MyBigInt(int[] factors)
         {
-            if (factors[factors.Length - 1] < 0) IsPositive = false;
+            if (factors[factors.Length - 1] < 0) Sign = -1;
             Factors = factors;
         }
 
         public static MyBigInt operator +(MyBigInt a, MyBigInt b) {
             List<int> resultFactorsList = new List<int>();
-            int t = 0;
+            int rest = 0;
             int factorsSum = 0;
             if (MyBigInt.checkIfNegativeIsBigger(a, b))
             {
                 a.changeSign();
                 b.changeSign();
             }
-            for (int i = 0; (i < Math.Max(a.Factors.Length, b.Factors.Length)) || (i > 0 && t != 0); i++)
+            for (int i = 0; (i < Math.Max(a.Factors.Length, b.Factors.Length)) || (i > 0 && rest != 0); i++)
             {
-                factorsSum += a.Factors.Length - 1 >= i ? a.Factors[i] : 0;
-                factorsSum += b.Factors.Length - 1 >= i ? b.Factors[i] : 0;
-                factorsSum += t;
+                factorsSum += a.Factors.Length - 1 >= i ? a.Factors[i] * a.Sign : 0;
+                factorsSum += b.Factors.Length - 1 >= i ? b.Factors[i] * b.Sign : 0;
+                factorsSum += rest;
                 if (factorsSum < 0 && i < Math.Max(a.Factors.Length, b.Factors.Length) - 1)
                 {
                     factorsSum += radix;
-                    t = -1;
+                    rest = -1;
                 } else
                 if (factorsSum > radix)
                 {
-                    t = factorsSum / radix;
+                    rest = factorsSum / radix;
                     factorsSum = factorsSum % radix;
                 }
-                else t = 0;
+                else rest = 0;
                 resultFactorsList.Add(factorsSum);
                 factorsSum = 0;
             }
@@ -91,7 +93,7 @@ namespace MyBigIntApplication
         public static MyBigInt operator -(MyBigInt a, MyBigInt b)
         {
             b.changeSign();
-            return a - b;
+            return a + b;
         }
 
         public override String ToString()
@@ -114,11 +116,7 @@ namespace MyBigIntApplication
 
         private void changeSign()
         {
-            IsPositive = !IsPositive;
-            for (int i = 0; i < Factors.Length; i++)
-            {
-                Factors[i] = -Factors[i];
-            }
+            Sign = -Sign;
         }
 
         public static bool checkIfNegativeIsBigger(MyBigInt a, MyBigInt b)
@@ -148,7 +146,7 @@ namespace MyBigIntApplication
                     }
                 }
             }
-            if (theBiggest != null && !theBiggest.IsPositive) return true;
+            if (theBiggest != null && theBiggest.Sign < 0) return true;
             else return false;
         }
     }
