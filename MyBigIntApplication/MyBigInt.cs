@@ -17,9 +17,10 @@ namespace MyBigIntApplication
         public MyBigInt(String value)
         {
             Sign = 1;
-            if (value.StartsWith("-") || value.StartsWith("+"))
+            if (value.ElementAt(0) == '-' || value.ElementAt(0) == '+')
             {
-                if (value.StartsWith("-")) {
+                if (value.ElementAt(0) == '-')
+                {
                     Sign = -1;
                 }
                 value = value.Substring(1, value.Length - 1);
@@ -123,7 +124,7 @@ namespace MyBigIntApplication
         public override String ToString()
         {
             StringBuilder stringBuild = new StringBuilder();
-            if (Sign < 0) stringBuild.Append("-");
+            if (Sign < 0) stringBuild.Append('-');
             for (int i = Factors.Length - 1; i >= 0; i--)
             {
                 stringBuild.Append(Factors[i]);
@@ -133,7 +134,7 @@ namespace MyBigIntApplication
 
         private bool checkInputString(String value)
         {
-            int startIndex = value.StartsWith("-") || value.StartsWith("+") ? 1 : 0;
+            int startIndex = value.ElementAt(0) == '-' || value.ElementAt(0) == '+' ? 1 : 0;
             String pattern = "\\D";
             if (Regex.IsMatch(value.Substring(startIndex, value.Length - startIndex), pattern)) return false;
             else return true;
