@@ -23,7 +23,7 @@ namespace MyBigIntApplication
                 {
                     Sign = -1;
                 }
-                value = value.Substring(1, value.Length - 1);
+                value = value.Substring(1, value.Length - 1);  //будет ли выделяться лишняя память или новая строка просто будет перетирать старую и и так все норм?
             }    
             Factors = new int[(int)Math.Ceiling((double)value.Length / 4)];
             int i = value.Length - 1;
@@ -39,9 +39,9 @@ namespace MyBigIntApplication
                         j++;
                     }
                 }
-                catch (ArgumentException e)
+                catch (ArgumentException e)  //не уверен что вообще когда нибудь попадет сюда, ибо checkInputString(value) должен все отловить
                 {
-                    Console.WriteLine("exc");
+                    Console.WriteLine("illegal argument");  
                 }
             }
         }
@@ -58,20 +58,20 @@ namespace MyBigIntApplication
             int factorsSum = 0;
             bool signsChanged = false;
             int aSign = a.Sign;
-            int bSign = b.Sign;
+            int bSign = b.Sign;  //не нравится как тут сделано, но если не вводить эти переменные то знак чисел будет меняться после некоторых операций над ними
             if (MyBigInt.checkIfNegativeIsBigger(a, b))
             {
                 aSign = -aSign;
                 bSign = -bSign;
-                signsChanged = true;
+                signsChanged = true;  //ну и эта булька вообще кошмар, но она нужна чтобы потом поменять знак обратно. тоже хз как сделать иначе
             }
             for (int i = 0; (i < Math.Max(a.Factors.Length, b.Factors.Length)) || (i > 0 && rest != 0); i++)
             {
                 factorsSum += a.Factors.Length - 1 >= i ? a.Factors[i] * aSign : 0;
                 factorsSum += b.Factors.Length - 1 >= i ? b.Factors[i] * bSign : 0;
                 factorsSum += rest;
-                if (factorsSum < 0 && i < Math.Max(a.Factors.Length, b.Factors.Length) - 1 && aSign != bSign)
-                {
+                if (factorsSum < 0 && i < Math.Max(a.Factors.Length, b.Factors.Length) - 1 && aSign != bSign)  //куча ебанутых ифов, думаю сделать через конечный автомат,
+                {                                                                                              //но не уверен что получится
                     factorsSum += radix;
                     rest = -1;
                 } else
@@ -86,7 +86,7 @@ namespace MyBigIntApplication
             }
             int resultSign = aSign == bSign && bSign < 0 ? -1 : 1;
             MyBigInt result = new MyBigInt(resultFactorsList.ToArray(), resultSign);
-            if (signsChanged)
+            if (signsChanged)  //вот тут мне нужна эта булька
             {
                 result.Sign = -result.Sign;
             }
@@ -140,8 +140,8 @@ namespace MyBigIntApplication
             else return true;
         }
 
-        public static bool checkIfNegativeIsBigger(MyBigInt a, MyBigInt b)
-        {
+        public static bool checkIfNegativeIsBigger(MyBigInt a, MyBigInt b)  //этот метод тоже какой то уродливый, тут бы тоже конечный автомат заюзать или вообще как нибудь без 
+        {                                                                   //него обойтись
             if (a.Sign == b.Sign && b.Sign < 0) return false;
             MyBigInt theBiggest = null;
             if (a.Factors.Length > b.Factors.Length)
