@@ -24,10 +24,9 @@ namespace MyBigIntApplication
                     Sign = -1;
                 }
                 value = value.Substring(1, value.Length - 1);  //будет ли выделяться лишняя память или новая строка просто будет перетирать старую и и так все норм?
-            }    
-            Factors = new int[(int)Math.Ceiling((double)value.Length / 4)];
+            }
+            List<int> factorsList = new List<int>();
             int i = value.Length - 1;
-            int j = 0;
             if (checkInputString(value))
             {
                 try
@@ -35,9 +34,9 @@ namespace MyBigIntApplication
                     for ( ; i >= 0; i -= 4)
                     {
                         int parseTokenLength = Math.Min(i + 1, 4);
-                        Factors[j] = int.Parse(value.Substring(i - parseTokenLength + 1, parseTokenLength));
-                        j++;
+                        factorsList.Add(int.Parse(value.Substring(i - parseTokenLength + 1, parseTokenLength)));
                     }
+                    Factors = removeUnnecessaryZeros(factorsList);
                 }
                 catch (ArgumentException e)  //не уверен что вообще когда нибудь попадет сюда, ибо checkInputString(value) должен все отловить
                 {
@@ -49,7 +48,7 @@ namespace MyBigIntApplication
         private MyBigInt(int[] factors, int sign)
         {
             Sign = sign;
-            Factors = factors;
+            Factors = removeUnnecessaryZeros(factors);
         }
 
         public static MyBigInt operator +(MyBigInt a, MyBigInt b) {
@@ -170,6 +169,28 @@ namespace MyBigIntApplication
             }
             if (theBiggest != null && theBiggest.Sign < 0) return true;
             else return false;
+        }
+
+        private static int[] removeUnnecessaryZeros(List<int> list) 
+        {
+            int newEndIndex = list.Count - 1;
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                if (newEndIndex == i && list[i] == 0) newEndIndex--;
+                else break;
+            }
+            return list.Take(newEndIndex + 1).ToArray<int>();
+        }
+
+        private static int[] removeUnnecessaryZeros(int[] arr)
+        {
+            int newEndIndex = arr.Length - 1;
+            for (int i = arr.Length - 1; i >= 0; i--)
+            {
+                if (newEndIndex == i && arr[i] == 0) newEndIndex--;
+                else break;
+            }
+            return arr.Take(newEndIndex + 1).ToArray<int>();
         }
     }
 }
