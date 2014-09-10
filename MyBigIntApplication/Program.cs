@@ -10,8 +10,8 @@ namespace MyBigIntApplication
     {
         static void Main(string[] args)
         {
-            MyBigInt first = new MyBigInt("-9999");
-            MyBigInt second = new MyBigInt("55541");
+            MyBigInt first = new MyBigInt("65421");
+            MyBigInt second = new MyBigInt("51324564");
             /*Console.WriteLine(first + second);
             Console.WriteLine(first - second);
             Console.WriteLine(second + first);
