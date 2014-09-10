@@ -99,15 +99,20 @@ namespace MyBigIntApplication
 
         public static MyBigInt operator *(MyBigInt a, MyBigInt b)
         {
-            List<int> resultFactorsList = new List<int>();
+            MyBigInt result = new MyBigInt("0");
             int factorProduct;
             int rest = 0;
             for (int i = 0; i < b.Factors.Length; i++)
             {
-                for (int j = 0; j < a.Factors.Length || rest != 0; j++)
+                List<int> resultFactorsList = new List<int>();
+                for (int j = 1; j <= i; j++)
                 {
-                    if (j >= a.Factors.Length) factorProduct = rest;
-                    else factorProduct = a.Factors[j] * b.Factors[i] + rest;
+                    resultFactorsList.Add(0);
+                }
+                for (int k = 0; k < a.Factors.Length || rest != 0; k++)
+                {
+                    if (k >= a.Factors.Length) factorProduct = rest;
+                    else factorProduct = a.Factors[k] * b.Factors[i] + rest;
                     if (factorProduct > radix)
                     {
                         rest = factorProduct / radix;
@@ -116,8 +121,10 @@ namespace MyBigIntApplication
                     else rest = 0;
                     resultFactorsList.Add(factorProduct);
                 }
+                result += new MyBigInt(resultFactorsList.ToArray(), 1);
             }
-            return new MyBigInt(resultFactorsList.ToArray(), a.Sign * b.Sign);
+            result.Sign = a.Sign * b.Sign;
+            return result;
         }
 
         public override String ToString()
