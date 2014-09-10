@@ -187,8 +187,9 @@ namespace MyBigIntApplication
             else return false;
         }
 
-        private static int[] removeUnnecessaryZeros(List<int> list) //поправить
+        private static int[] removeUnnecessaryZeros(List<int> list)
         {
+            if (list.Count == 1) return list.ToArray<int>();
             int newEndIndex = list.Count - 1;
             for (int i = list.Count - 1; i >= 0; i--)
             {
