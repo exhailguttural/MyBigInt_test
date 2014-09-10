@@ -133,6 +133,15 @@ namespace MyBigIntApplication
             if (Sign < 0) stringBuild.Append('-');
             for (int i = Factors.Length - 1; i >= 0; i--)
             {
+                if (i < Factors.Length - 1)
+                {
+                    int zerosNumber = 1;
+                    while (Factors[i] / (int)Math.Pow(10, zerosNumber) != 0)
+                    {
+                        zerosNumber++;
+                    }
+                    for (int j = 0; j < 4 - zerosNumber; j++) stringBuild.Append("0");
+                }
                 stringBuild.Append(Factors[i]);
             }
                 return stringBuild.ToString();
@@ -178,7 +187,7 @@ namespace MyBigIntApplication
             else return false;
         }
 
-        private static int[] removeUnnecessaryZeros(List<int> list) 
+        private static int[] removeUnnecessaryZeros(List<int> list) //поправить
         {
             int newEndIndex = list.Count - 1;
             for (int i = list.Count - 1; i >= 0; i--)
