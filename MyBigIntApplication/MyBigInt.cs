@@ -14,7 +14,7 @@ namespace MyBigIntApplication
         public int Sign {get; set;}
         private static int radix = 10000;
 
-        public MyBigInt(String value)
+        public MyBigInt (String value)
         {
             Sign = 1;
             if (value.ElementAt(0) == '-' || value.ElementAt(0) == '+')
@@ -23,7 +23,7 @@ namespace MyBigIntApplication
                 {
                     Sign = -1;
                 }
-                value = value.Substring(1, value.Length - 1);  //будет ли выделяться лишняя память или новая строка просто будет перетирать старую и и так все норм?
+                value = value.Substring(1, value.Length - 1);
             }
             List<int> factorsList = new List<int>();
             int i = value.Length - 1;
@@ -38,10 +38,14 @@ namespace MyBigIntApplication
                     }
                     Factors = removeUnnecessaryZeros(factorsList);
                 }
-                catch (ArgumentException e)  //не уверен что вообще когда нибудь попадет сюда, ибо checkInputString(value) должен все отловить
+                catch (ArgumentException e)
                 {
-                    Console.WriteLine("illegal argument");  
+                    throw new ArgumentException();
                 }
+            }
+            else
+            {
+                throw new ArgumentException();
             }
         }
 
@@ -57,20 +61,24 @@ namespace MyBigIntApplication
             int factorsSum = 0;
             bool signsChanged = false;
             int aSign = a.Sign;
-            int bSign = b.Sign;  //не нравится как тут сделано, но если не вводить эти переменные то знак чисел будет меняться после некоторых операций над ними
-            if (MyBigInt.checkIfNegativeIsBigger(a, b))
+            int bSign = b.Sign;
+            if (MyBigInt.checkIfNegativeIsBigger(a, b) == 0)
+            {
+                return new MyBigInt("0");
+            }
+            if (MyBigInt.checkIfNegativeIsBigger(a, b) < 0)
             {
                 aSign = -aSign;
                 bSign = -bSign;
-                signsChanged = true;  //ну и эта булька вообще кошмар, но она нужна чтобы потом поменять знак обратно. тоже хз как сделать иначе
+                signsChanged = true;  
             }
             for (int i = 0; (i < Math.Max(a.Factors.Length, b.Factors.Length)) || (i > 0 && rest != 0); i++)
             {
                 factorsSum += a.Factors.Length - 1 >= i ? a.Factors[i] * aSign : 0;
                 factorsSum += b.Factors.Length - 1 >= i ? b.Factors[i] * bSign : 0;
                 factorsSum += rest;
-                if (factorsSum < 0 && i < Math.Max(a.Factors.Length, b.Factors.Length) - 1 && aSign != bSign)  //куча ебанутых ифов, думаю сделать через конечный автомат,
-                {                                                                                              //но не уверен что получится
+                if (factorsSum < 0 && i < Math.Max(a.Factors.Length, b.Factors.Length) - 1 && aSign != bSign)  
+                {                                                                                              
                     factorsSum += radix;
                     rest = -1;
                 } else
@@ -85,7 +93,7 @@ namespace MyBigIntApplication
             }
             int resultSign = aSign == bSign && bSign < 0 ? -1 : 1;
             MyBigInt result = new MyBigInt(resultFactorsList.ToArray(), resultSign);
-            if (signsChanged)  //вот тут мне нужна эта булька
+            if (signsChanged)  
             {
                 result.Sign = -result.Sign;
             }
@@ -149,15 +157,20 @@ namespace MyBigIntApplication
 
         private bool checkInputString(String value)
         {
-            int startIndex = value.ElementAt(0) == '-' || value.ElementAt(0) == '+' ? 1 : 0;
             String pattern = "\\D";
-            if (Regex.IsMatch(value.Substring(startIndex, value.Length - startIndex), pattern)) return false;
-            else return true;
+            if (Regex.IsMatch(value.Substring(0, value.Length), pattern) && value.Length > 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
-        public static bool checkIfNegativeIsBigger(MyBigInt a, MyBigInt b)  //этот метод тоже какой то уродливый, тут бы тоже конечный автомат заюзать или вообще как нибудь без 
-        {                                                                   //него обойтись
-            if (a.Sign == b.Sign && b.Sign < 0) return false;
+        public static int checkIfNegativeIsBigger(MyBigInt a, MyBigInt b) 
+        {                                                                   
+            if (a.Sign == b.Sign && b.Sign < 0) return 1;
             MyBigInt theBiggest = null;
             if (a.Factors.Length > b.Factors.Length)
             {
@@ -183,29 +196,39 @@ namespace MyBigIntApplication
                     }
                 }
             }
-            if (theBiggest != null && theBiggest.Sign < 0) return true;
-            else return false;
-        }
-
-        private static int[] removeUnnecessaryZeros(List<int> list)
-        {
-            if (list.Count == 1) return list.ToArray<int>();
-            int newEndIndex = list.Count - 1;
-            for (int i = list.Count - 1; i >= 0; i--)
+            if (theBiggest == null)
             {
-                if (newEndIndex == i && list[i] == 0) newEndIndex--;
-                else break;
+                return 0;
             }
-            return list.Take(newEndIndex + 1).ToArray<int>();
+            else if (theBiggest.Sign < 0)
+            {
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
-        private static int[] removeUnnecessaryZeros(int[] arr)
+        private int[] removeUnnecessaryZeros(List<int> list)
         {
+            return removeUnnecessaryZeros(list.ToArray());
+        }
+
+        private int[] removeUnnecessaryZeros(int[] arr)
+        {
+            if (arr.Length == 1) return arr;
             int newEndIndex = arr.Length - 1;
-            for (int i = arr.Length - 1; i >= 0; i--)
+            for (int i = newEndIndex; i >= 0; i--)
             {
-                if (newEndIndex == i && arr[i] == 0) newEndIndex--;
-                else break;
+                if (arr[i] == 0)
+                {
+                    newEndIndex = i;
+                }
+                else
+                {
+                    break;
+                }
             }
             return arr.Take(newEndIndex + 1).ToArray<int>();
         }
